@@ -1,70 +1,52 @@
-# Getting Started with Create React App
+# AnchorWatch
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+AnchorWatch is a web application designed to monitor Bitcoin transaction data. Users can authenticate using email or OAuth providers to view and manage transaction information on a dashboard. This project integrates with the Mempool.space API to fetch real-time Bitcoin transaction data.
 
-In the project directory, you can run:
+## Setup Instructions
 
-### `npm start`
+### 1. Clone the Repository
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+First, clone the repository to your local machine and navigate into the project directory:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+git clone https://github.com/justins11/anchordemo
+cd anchorwatch
 
-### `npm test`
+## Install Dependencies
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+npm install
 
-### `npm run build`
+## Configure Firebase
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Create a Firebase project named AnchorWatch.
+2. Enable Email/Password and OAuth sign-in methods in the Firebase console.
+3. Copy your Firebase configuration and replace the placeholder values in the .env file with your actual Firebase configuration values.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Deploy the Application
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Deploy your application using a hosting service like Vercel, Netlify, or Firebase Hosting. Follow the specific instructions for the service you choose:
 
-### `npm run eject`
+Vercel: Follow the Vercel deployment guide.
+Netlify: Follow the Netlify deployment guide.
+Firebase Hosting: Follow the Firebase Hosting deployment guide.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## API
+AnchorWatch integrates with the Mempool.space API to fetch Bitcoin transaction data. For more information on the API, refer to the Mempool API Documentation.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+##Environment Variables
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+REACT_APP_FIREBASE_API_KEY=your_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
 
-## Learn More
+##Contributing
+We welcome contributions to AnchorWatch! Please fork the repository and submit pull requests for any enhancements or bug fixes.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+##License
+AnchorWatch is open-source software licensed under the MIT license.
