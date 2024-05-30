@@ -1,12 +1,15 @@
 // src/components/Dashboard.js
 
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableHead, TableRow, CircularProgress, Typography, Container, Button } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, CircularProgress, Typography, Container, Button, Box, TextField } from '@mui/material';
+import { LineChart } from '@mui/x-charts/LineChart';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import LogoutButton from './LogoutButton';
+import '../index.css';
+
 
 
 const Dashboard = () => {
@@ -15,20 +18,23 @@ const Dashboard = () => {
   const [favorites, setFavorites] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
+  const [AddressT, setAddressT] = useState('');
+  const [addrError, setAddrError] = useState(false);
+
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
+        
         const address = process.env.REACT_APP_BITCOIN_ADDRESS;
+        setAddressT(address);
         const response = await axios.get(`${process.env.REACT_APP_MEMPOOL_API_URL}/address/${address}/txs`);
-
-        console.log(response)
         setTransactions(response.data);
         if (response.data.length < 25) {
           setHasMore(false);
         }
       } catch (error) {
-        console.error(error);
+        //console.error(error);
       } finally {
         setLoading(false);
       }
@@ -37,33 +43,26 @@ const Dashboard = () => {
     fetchTransactions();
   }, []);
 
-  const fetchMoreTransactions = async () => {
+  const fetchMoreTransactions = async (address) => {
     try {
-      const address = process.env.REACT_APP_BITCOIN_ADDRESS;
+      setLoading(true);
       const response = await axios.get(`${process.env.REACT_APP_MEMPOOL_API_URL}/address/${address}/txs`);
-      setTransactions([...transactions, ...response.data]);
+      setTransactions(response.data);
+      setAddressT(address);
       if (response.data.length < 25) {
         setHasMore(false);
       }
+      setLoading(false);
     } catch (error) {
-      console.error(error);
+      setAddrError(error.response.data)
+      setLoading(false);
     }
-  };
-
-  const handleFavorite = (tx) => {
-    setFavorites((prevFavorites) => {
-      if (prevFavorites.includes(tx)) {
-        return prevFavorites.filter(fav => fav !== tx);
-      } else {
-        return [...prevFavorites, tx];
-      }
-    });
   };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
-        navigate.push('/');
+        navigate('/');
       }
     });
 
@@ -71,45 +70,90 @@ const Dashboard = () => {
   }, [navigate]);
 
   if (loading) {
-    return <CircularProgress />;
+    return <div style={{display: 'flex', marginTop:'400px', justifyContent: 'center'}}><CircularProgress /></div>;
+  }
+
+  function updateAddrVar(e){
+    const newAddr = document.getElementById('addr').value;   
+    if(newAddr.length >= 25){
+      setAddrError(false);
+      fetchMoreTransactions(newAddr)
+    }else{
+      setAddrError("Input must be at least 25 characters long");
+    }
   }
 
   return (
-    <Container>
+    <Container>      
+      <Box className='logout-box' ><LogoutButton /></Box>
+      <Box>
+        <TextField
+          id='addr'
+          label='BTC ADDRESS'
+          margin='normal'
+          size='small'
+          style = {{width: 400}}    
+          helperText={addrError ? addrError : ""}
+          error={addrError}
+        />
+        <Button variant="contained" id='updateaddr' size='large' color='secondary' onClick={updateAddrVar} sx={{ m: 2 }}>
+          Submit
+        </Button>
+      </Box>
+      <Box>
+         <p><b>Address :</b> {AddressT}</p>
+         <p><b>Balance :</b> ₿500.00</p> 
+      </Box>
+      <Typography variant="h4" gutterBottom>
+        Holding
+      </Typography>
+      <Box>
+        <LineChart
+          xAxis={[{ data: [1, 2, 3, 5, 8, 10, 11, 12, 15, 20, 25, 30] }]}
+          series={[
+            {
+              data: [2, 2.5, 4.5, 5, 8, 9, 5, 10, 15, 18, 5, 22],
+              area: true,
+            },
+          ]}
+          width={1200}
+          height={500}
+        />
+      </Box>
       <Typography variant="h4" gutterBottom>
         Transaction
-      </Typography>
+      </Typography>     
       <InfiniteScroll
         dataLength={transactions.length}
-        //next={fetchMoreTransactions}
-        hasMore={hasMore}
-        loader={<CircularProgress />}
+        loader={<div style={{display: 'flex', marginTop:'400px', justifyContent: 'center'}}><CircularProgress /></div>}
         endMessage={<Typography>No more transactions</Typography>}
       >
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>TYPE</TableCell>
+              <TableCell>FEE</TableCell>
               <TableCell>DATE</TableCell>
               <TableCell>TX ID</TableCell>
-              <TableCell>AMOUNT (BTC)</TableCell>
-              <TableCell>BALANCE (BTC)</TableCell>
+              <TableCell>SIZE</TableCell>
+              <TableCell>WEIGHT</TableCell>
               <TableCell>STATUS</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {transactions.map((tx) => (
               <TableRow key={tx.txid}>
-                <TableCell>{new Date(tx.time * 1000).toLocaleString()}</TableCell>
-                <TableCell>{tx.value}</TableCell>
-                <TableCell>{tx.confirmations > 0 ? 'Confirmed' : 'Unconfirmed'}</TableCell>
+                <TableCell>{tx.fee}</TableCell>
+                <TableCell>{new Date(tx.locktime * 1000).toLocaleString()}</TableCell>
+                <TableCell>{tx.txid}</TableCell>
+                <TableCell>{tx.size}</TableCell>
+                <TableCell>{tx.weight}</TableCell>
                 <TableCell>
-                  <Button onClick={() => handleFavorite(tx.txid)}>
-                    {favorites.includes(tx.txid) ? 'Unfavorite' : 'Favorite'}
-                  </Button>
+                {tx.status.confirmed ? (
+                   <Button variant="outlined" color="success" sx={ { borderRadius: 25 } }>Success</Button>
+                ) : (
+                  <Button variant="outlined" color="error" sx={ { borderRadius: 25 } }>Failed</Button>
+                )}
                 </TableCell>
-                <TableCell>100</TableCell>
-                <TableCell>200</TableCell>
               </TableRow>
             ))}
           </TableBody>

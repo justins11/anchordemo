@@ -1,21 +1,22 @@
 // src/components/SignIn.js
 
-
 import React, { useState } from 'react';
 import { auth, googleProvider, facebookProvider, githubProvider } from '../firebase';
 import { signInWithPopup, signInWithEmailAndPassword, sendSignInLinkToEmail } from 'firebase/auth';
-import { TextField, Button, Typography, Container } from '@mui/material';
+import { TextField, Button, Typography, Container, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import logo from '../logo.svg';
+import logo from '../logo.png';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState(false);
+
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleMagicLink = async () => {
     const actionCodeSettings = {
-      url: 'http://localhost:3000/dashboard',
+      url: `${process.env.REACT_APP_BASE_URL}/dashboard`,
       handleCodeInApp: true,
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -26,26 +27,29 @@ const SignIn = () => {
   const handleOAuth = async (provider) => {
     try {
       await signInWithPopup(auth, provider);
-      navigate.push('/dashboard');
+      navigate('/dashboard');
     } catch (error) {
-      console.error(error);
+      //console.error(error);
+      setEmailError('INVALID_EMAIL')
     }
   };
 
   const handleEmailSignIn = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate.push('/dashboard');
+      navigate('/dashboard');
     } catch (error) {
-      console.error(error);
+      //console.error(error);
+      setEmailError('INVALID_EMAIL')
+      
     }
   };
 
   return (
-    <Container>      
-       {/* <Typography variant="h4" gutterBottom>
+    <Container className='main-body' variant="dense">      
+       <Typography align="center" sx={{ maxWidth: 'md', marginLeft:'120px' }}>
         <img src={logo} className="App-logo" alt="logo" />
-      </Typography> */}
+      </Typography>
       <Typography variant="h4" gutterBottom>
         Sign In
       </Typography>
@@ -56,8 +60,8 @@ const SignIn = () => {
         fullWidth
         margin="normal"
         placeholder='user@email.com'
-        required
-
+        helperText={emailError ? emailError : ""}
+        error={emailError}
       />
       <TextField
         label="Password"
@@ -69,18 +73,23 @@ const SignIn = () => {
         placeholder='******'
         required
       />
-      <Button variant="contained" color="primary" onClick={handleEmailSignIn} sx={{ m: 2 }}>
-        Sign In with Email
-      </Button>
-      <Button variant="contained" onClick={() => handleOAuth(googleProvider)} sx={{ m: 2 }}>
-        Sign In with Google
-      </Button>
-      <Button variant="contained" onClick={() => handleOAuth(facebookProvider)} sx={{ m: 2 }}>
-        Sign In with Facebook
-      </Button>
-      <Button variant="contained" onClick={() => handleOAuth(githubProvider)} sx={{ m: 2 }}>
-        Sign In with GitHub
-      </Button>
+      <Box className="auth-box">
+        <Button variant="outlined" color="primary" onClick={handleEmailSignIn} sx={{ m: 2 }}>
+          Sign In with Email
+        </Button>
+        <Button variant="contained" color="primary" onClick={handleMagicLink} sx={{ m: 2 }}>
+          Send Magic Link
+        </Button>
+        <Button variant="outlined" onClick={() => handleOAuth(googleProvider)} sx={{ m: 2 }}>
+          Sign In with Google
+        </Button>
+        <Button variant="outlined" onClick={() => handleOAuth(facebookProvider)} sx={{ m: 2 }}>
+          Sign In with Facebook
+        </Button>
+        <Button variant="outlined" onClick={() => handleOAuth(githubProvider)} sx={{ m: 2 }}>
+          Sign In with GitHub
+        </Button>
+      </Box>
     </Container>
   );
 };
