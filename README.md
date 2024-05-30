@@ -10,7 +10,7 @@ AnchorWatch is a web application designed to monitor Bitcoin transaction data. U
 
 First, clone the repository to your local machine and navigate into the project directory:
 
-```bash
+
 git clone https://github.com/justins11/anchordemo
 cd anchorwatch
 
